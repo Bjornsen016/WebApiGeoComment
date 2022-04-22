@@ -38,14 +38,16 @@ public class GeoController : ControllerBase
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpGet]
-    public IEnumerable<string> GetList(
+    public async Task<ActionResult<List<CommentReturnDTO>>> GetList(
         [BindRequired] double minLon, [BindRequired] double maxLon,
         [BindRequired] double minLat, [BindRequired] double maxLat,
         [BindRequired] [FromQuery(Name = "api-version")]
         string apiVersion)
     {
-        throw new NotImplementedException();
+        var comments = await _geoCommentService.GetComments(minLon, maxLon, minLat, maxLat);
+        return Ok(comments);
     }
 
     [ProducesResponseType(StatusCodes.Status201Created)]
