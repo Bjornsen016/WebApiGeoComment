@@ -1,4 +1,5 @@
 global using GeoComment.Models;
+using GeoComment.AutoMapperProfiles;
 using GeoComment.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GeoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<Database>();
+builder.Services.AddScoped<GeoCommentService>();
+builder.Services.AddAutoMapper(typeof(CommentProfile));
 
 var app = builder.Build();
 
