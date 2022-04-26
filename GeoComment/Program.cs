@@ -1,6 +1,8 @@
 global using GeoComment.Models;
 using GeoComment.AutoMapperProfiles;
 using GeoComment.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,13 @@ builder.Services.AddDbContext<GeoDbContext>(options =>
 builder.Services.AddScoped<Database>();
 builder.Services.AddScoped<GeoCommentService>();
 builder.Services.AddAutoMapper(typeof(CommentProfile));
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+    options.DefaultApiVersion = new ApiVersion(0, 1);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+});
 
 var app = builder.Build();
 

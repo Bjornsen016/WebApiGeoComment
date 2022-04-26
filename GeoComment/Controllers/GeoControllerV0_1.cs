@@ -10,31 +10,32 @@ using Microsoft.EntityFrameworkCore;
 namespace GeoComment.Controllers;
 
 [Route("api/geo-comments")]
+[ApiVersion("0.1")]
 [ApiController]
-public class GeoController : ControllerBase
+public class GeoControllerV0_1 : ControllerBase
 {
     private readonly GeoCommentService _geoCommentService;
-    private readonly Database _database;
+    private readonly IMapper _mapper;
 
-    public GeoController(GeoCommentService geoCommentService, Database database)
+    public GeoControllerV0_1(GeoCommentService geoCommentService, IMapper mapper)
     {
         _geoCommentService = geoCommentService;
-        _database = database;
+        _mapper = mapper;
     }
 
     [Route("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
-    public async Task<ActionResult<CommentReturnDTO>> Get(int id,
-        [BindRequired] [FromQuery(Name = "api-version")]
-        string apiVersion)
+    public async Task<ActionResult<CommentReturnDTO>> Get(int id)
     {
         var comment = await _geoCommentService.GetCommentById(id);
 
         if (comment == null) return NotFound();
 
-        return Ok(comment);
+        var commentReturn = _mapper.Map<CommentReturnDTO>(comment);
+
+        return Ok(commentReturn);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -42,25 +43,36 @@ public class GeoController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<CommentReturnDTO>>> GetList(
         [BindRequired] double minLon, [BindRequired] double maxLon,
-        [BindRequired] double minLat, [BindRequired] double maxLat,
-        [BindRequired] [FromQuery(Name = "api-version")]
-        string apiVersion)
+        [BindRequired] double minLat, [BindRequired] double maxLat)
     {
         var comments = await _geoCommentService.GetComments(minLon, maxLon, minLat, maxLat);
-        return Ok(comments);
+
+        var returnComments = new List<CommentReturnDTO>();
+        foreach (var comment in comments)
+        {
+            var cmt = _mapper.Map<CommentReturnDTO>(comment);
+            returnComments.Add(cmt);
+        }
+
+        return Ok(returnComments);
     }
 
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<ActionResult<CommentReturnDTO>> CreateComment(CommentInputDTO input,
-        [BindRequired] [FromQuery(Name = "api-version")]
-        string apiVersion)
+    public async Task<ActionResult<CommentReturnDTO>> CreateComment(CommentInputDTO input)
     {
         try
         {
-            var createdComment = await _geoCommentService.CreateCommentInDb(input);
-            return CreatedAtAction(nameof(Get), new {id = createdComment.Id}, createdComment);
+            var comment = new Comment
+            {
+                Author = new GeoUser {Name = input.Author}, Latitude = input.Latitude, Longitude = input.Longitude,
+                Message = input.Message
+            };
+            var createdComment = await _geoCommentService.CreateCommentInDb(comment);
+            var commentReturn = _mapper.Map<CommentReturnDTO>(createdComment);
+
+            return CreatedAtAction(nameof(Get), new {id = commentReturn.Id}, commentReturn);
         }
         catch (AuthorNotFoundException)
         {
@@ -70,14 +82,5 @@ public class GeoController : ControllerBase
         {
             return NotFound("A database error occurred");
         }
-    }
-
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [Route("/test/reset-db")]
-    public async Task<ActionResult> ResetDataBase()
-    {
-        await _database.RecreateDb();
-        return Ok();
     }
 }
