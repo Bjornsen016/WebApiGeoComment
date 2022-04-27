@@ -22,7 +22,8 @@ builder.Services.AddScoped<Database>();
 builder.Services.AddScoped<GeoCommentService>();
 builder.Services.AddScoped<UserService>();
 
-builder.Services.AddIdentityCore<GeoUser>().AddEntityFrameworkStores<GeoDbContext>();
+builder.Services.AddIdentity<GeoUser, IdentityRole>()
+    .AddEntityFrameworkStores<GeoDbContext>();
 
 builder.Services.AddAutoMapper(typeof(CommentProfile));
 
