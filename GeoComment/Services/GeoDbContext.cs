@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GeoComment.Services;
 
-public class GeoDbContext : DbContext
+public class GeoDbContext : IdentityDbContext<GeoUser>
 {
     public GeoDbContext(DbContextOptions<GeoDbContext> options) : base(options)
     {

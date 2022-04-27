@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GeoComment.Controllers;
 
 [Route("api/geo-comments")]
+[ControllerName("Geo Controller")]
 [ApiVersion("0.1")]
 [ApiController]
 public class GeoControllerV0_1 : ControllerBase

@@ -1,6 +1,7 @@
 global using GeoComment.Models;
 using GeoComment.AutoMapperProfiles;
 using GeoComment.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,8 @@ builder.Services.AddScoped<Database>();
 builder.Services.AddScoped<GeoCommentService>();
 builder.Services.AddScoped<UserService>();
 
+builder.Services.AddIdentityCore<GeoUser>().AddEntityFrameworkStores<GeoDbContext>();
+;
 
 builder.Services.AddAutoMapper(typeof(CommentProfile));
 
