@@ -25,7 +25,7 @@ public class GeoCommentService
     public async Task<Comment> CreateCommentInDb(Comment comment)
     {
         //TODO: Make it use id instead later.
-        var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.Name == comment.Author.Name);
+        var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.UserName == comment.Author.UserName);
 
         if (author is null) throw new AuthorNotFoundException();
 
@@ -44,7 +44,7 @@ public class GeoCommentService
 
         var commentReturn = new CommentReturnDTO
         {
-            Author = cmt.Entity.Author.Name,
+            Author = cmt.Entity.Author.UserName,
             Id = cmt.Entity.Id,
             Latitude = cmt.Entity.Latitude,
             Longitude = cmt.Entity.Longitude,

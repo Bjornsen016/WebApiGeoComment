@@ -67,7 +67,7 @@ public class GeoControllerV0_1 : ControllerBase
         {
             var comment = new Comment
             {
-                Author = new GeoUser {Name = input.Author}, Latitude = input.Latitude, Longitude = input.Longitude,
+                Author = new GeoUser {UserName = input.Author}, Latitude = input.Latitude, Longitude = input.Longitude,
                 Message = input.Message
             };
             var createdComment = await _geoCommentService.CreateCommentInDb(comment);

@@ -22,8 +22,8 @@ public class Database
     {
         var users = new GeoUser[]
         {
-            new() {Name = "Ada"},
-            new() {Name = "Bill"}
+            new() {UserName = "Ada"},
+            new() {UserName = "Bill"}
         };
 
         await _geoDbContext.Authors.AddRangeAsync(users);

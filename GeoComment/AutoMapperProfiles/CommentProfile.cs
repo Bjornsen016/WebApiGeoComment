@@ -9,7 +9,7 @@ public class CommentProfile : Profile
     {
         CreateMap<CommentInputDTO, Comment>(); //TODO: Kolla hur det ska fungera med input till comment.
         CreateMap<Comment, CommentReturnDTO>().ForMember(dest => dest.Author, opt =>
-            opt.MapFrom(src => src.Author.Name));
+            opt.MapFrom(src => src.Author.UserName));
 
         //TODO: Fixa mapping med v2
     }

@@ -34,7 +34,7 @@ public class GeoControllerV0_2 : ControllerBase
         {
             Body = new CommentReturnBody
             {
-                Author = comment.Author.Name,
+                Author = comment.Author.UserName,
                 Message = comment.Message
             },
             Id = comment.Id,
