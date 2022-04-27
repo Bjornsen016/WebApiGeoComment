@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.AspNetCore.Identity;
 
 namespace GeoComment.Services;
 
@@ -15,18 +16,5 @@ public class Database
     {
         await _geoDbContext.Database.EnsureDeletedAsync();
         await _geoDbContext.Database.EnsureCreatedAsync();
-        await SeedUsers();
-    }
-
-    public async Task SeedUsers()
-    {
-        var users = new GeoUser[]
-        {
-            new() {UserName = "Ada"},
-            new() {UserName = "Bill"}
-        };
-
-        await _geoDbContext.Authors.AddRangeAsync(users);
-        await _geoDbContext.SaveChangesAsync();
     }
 }

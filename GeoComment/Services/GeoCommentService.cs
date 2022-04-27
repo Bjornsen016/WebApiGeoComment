@@ -24,32 +24,19 @@ public class GeoCommentService
 
     public async Task<Comment> CreateCommentInDb(Comment comment)
     {
-        //TODO: Make it use id instead later.
-        var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.UserName == comment.Author.UserName);
+        var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.UserName == comment.AuthorName);
 
-        if (author is null) throw new AuthorNotFoundException();
-
-        var newComment = new Comment
+        Comment newComment = new Comment
         {
             Latitude = comment.Latitude,
             Longitude = comment.Longitude,
             Message = comment.Message,
-            Author = author
+            AuthorName = comment.AuthorName
         };
+        if (author is not null) newComment.Author = author;
 
         var cmt = await _geoDbContext.AddAsync(newComment);
         await _geoDbContext.SaveChangesAsync();
-
-        /*var cmrtn = _mapper.Map<CommentReturnDTO>(cmt.Entity);
-
-        var commentReturn = new CommentReturnDTO
-        {
-            Author = cmt.Entity.Author.UserName,
-            Id = cmt.Entity.Id,
-            Latitude = cmt.Entity.Latitude,
-            Longitude = cmt.Entity.Longitude,
-            Message = cmt.Entity.Message
-        };*/
 
         return cmt.Entity;
     }
@@ -67,8 +54,4 @@ public class GeoCommentService
 
         return comments;
     }
-}
-
-public class AuthorNotFoundException : Exception
-{
 }
