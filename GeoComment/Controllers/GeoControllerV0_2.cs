@@ -2,6 +2,7 @@
 using GeoComment.DTOs;
 using GeoComment.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GeoComment.Controllers;
 
@@ -34,7 +35,7 @@ public class GeoControllerV0_2 : ControllerBase
         {
             Body = new CommentReturnBody
             {
-                Author = comment.Author.UserName,
+                Author = comment.AuthorName,
                 Message = comment.Message
             },
             Id = comment.Id,
@@ -44,4 +45,10 @@ public class GeoControllerV0_2 : ControllerBase
 
         return Ok(commentReturn);
     }
+
+    //TODO: Make the following methods: 
+    // Create comment (Auth)
+    // Get comment list (Like before but with new return type)
+    // Get comments by username (no Auth)
+    // Delete comment (Auth)
 }

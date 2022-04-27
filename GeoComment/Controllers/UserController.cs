@@ -1,11 +1,12 @@
 ﻿using GeoComment.DTOs;
 using GeoComment.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace GeoComment.Controllers;
 
 [Route("api/user")]
+[ApiVersion("0.2")]
+[ControllerName("User Controller")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -17,8 +18,28 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Route("register")]
-    public async Task<ActionResult> RegisterNewUser(RegisterUserInput input)
+    public async Task<ActionResult<RegisterUserReturn>> RegisterNewUser(RegisterUserInput input)
+    {
+        GeoUser newUser = await _userService.RegisterNewUser(input);
+
+        if (newUser == null) return BadRequest();
+
+        RegisterUserReturn returnUser = new RegisterUserReturn
+        {
+            Id = newUser.Id,
+            Username = newUser.UserName
+        };
+        return CreatedAtAction(nameof(RegisterNewUser), returnUser);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Route("login")]
+    public async Task<ActionResult> Login(RegisterUserInput input)
     {
         throw new NotImplementedException();
     }
