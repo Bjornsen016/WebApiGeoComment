@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace GeoComment.Controllers
 {
     [Route("test")]
+    [ApiVersion("0.1")]
+    [ApiVersion("0.2")]
     [ApiController]
     public class TestController : ControllerBase
     {
