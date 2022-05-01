@@ -1,4 +1,6 @@
 global using GeoComment.Models;
+using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using GeoComment.AutoMapperProfiles;
 using GeoComment.Services;
@@ -64,6 +66,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 
 
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
     options.OperationFilter<AddApiVersionExampleValueOperationFilter>();
 });
 

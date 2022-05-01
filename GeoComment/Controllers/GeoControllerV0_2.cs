@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.ComponentModel;
+using System.Security.Claims;
 using AutoMapper;
 using GeoComment.DTOs;
 using GeoComment.Services;
@@ -16,19 +17,24 @@ namespace GeoComment.Controllers;
 public class GeoControllerV0_2 : ControllerBase
 {
     private readonly GeoCommentService _geoCommentService;
-    private readonly IMapper _mapper;
     private readonly UserService _userService;
 
-    public GeoControllerV0_2(GeoCommentService geoCommentService, IMapper mapper, UserService userService)
+    public GeoControllerV0_2(GeoCommentService geoCommentService, UserService userService)
     {
         _geoCommentService = geoCommentService;
-        _mapper = mapper;
         _userService = userService;
     }
 
+    /// <summary>
+    /// Gets a specific comment by id
+    /// </summary>
+    /// <param name="id">Id of the comment</param>
+    /// <returns>The comment</returns>
+    /// <response code="200">Success: Returns the comment</response>
     [Route("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     [HttpGet]
     public async Task<ActionResult<CommentReturnV0_2>> Get(int id)
     {
@@ -36,28 +42,35 @@ public class GeoControllerV0_2 : ControllerBase
 
         if (comment == null) return NotFound();
 
-        var commentReturn = new CommentReturnV0_2
-        {
-            Body = new CommentReturnBody
-            {
-                Author = comment.AuthorName,
-                Message = comment.Message,
-                Title = comment.Title
-            },
-            Id = comment.Id,
-            Latitude = comment.Latitude,
-            Longitude = comment.Longitude
-        };
+        var commentReturn = CommentReturnV0_2.CreateReturn(comment);
 
         return Ok(commentReturn);
     }
 
-
+    /// <summary>
+    /// Creates a comment
+    /// </summary>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST api/geo-comments
+    ///     {
+    ///         "body": {
+    ///             "title": "Lorem",
+    ///             "message": "Lorem ipsum dolor amet"
+    ///         },
+    ///         "longitude": 5,
+    ///         "latitude": 5
+    ///     }
+    /// </remarks>
+    /// <param name="input">Comment input</param>
+    /// <returns>The comment if created</returns>
+    /// <response code="201">Returns the created comment</response>
     [HttpPost]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Produces("application/json")]
     public async Task<ActionResult<CommentReturnV0_2>> CreateComment(CommentInputV0_2 input)
     {
         var userPrincipal = HttpContext.User;
@@ -79,18 +92,7 @@ public class GeoControllerV0_2 : ControllerBase
                 Title = input.Body.Title
             };
             var createdComment = await _geoCommentService.CreateCommentInDb(comment);
-            var commentReturn = new CommentReturnV0_2
-            {
-                Body = new CommentReturnBody
-                {
-                    Author = createdComment.AuthorName,
-                    Message = createdComment.Message,
-                    Title = createdComment.Title
-                },
-                Id = createdComment.Id,
-                Latitude = createdComment.Latitude,
-                Longitude = createdComment.Longitude
-            };
+            var commentReturn = CommentReturnV0_2.CreateReturn(createdComment);
 
             return CreatedAtAction(nameof(Get), new {id = commentReturn.Id}, commentReturn);
         }
@@ -100,10 +102,20 @@ public class GeoControllerV0_2 : ControllerBase
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    ///     
+    /// </remarks>
+    /// <param name="username">Username of the Author</param>
+    /// <returns>The users comments</returns>
+    /// <response code="200">Success: Returns all the comments by the user</response>
     [HttpGet]
     [Route("{username}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     public async Task<ActionResult<List<CommentReturnV0_2>>> GetUserComments(string username)
     {
         var comments = await _geoCommentService.GetCommentsByUser(username);
@@ -114,18 +126,7 @@ public class GeoControllerV0_2 : ControllerBase
 
         foreach (var comment in comments)
         {
-            var cmt = new CommentReturnV0_2
-            {
-                Body = new CommentReturnBody
-                {
-                    Author = comment.AuthorName,
-                    Message = comment.Message,
-                    Title = comment.Title
-                },
-                Id = comment.Id,
-                Latitude = comment.Latitude,
-                Longitude = comment.Longitude
-            };
+            var cmt = CommentReturnV0_2.CreateReturn(comment);
 
             returnComments.Add(cmt);
         }
@@ -133,10 +134,19 @@ public class GeoControllerV0_2 : ControllerBase
         return Ok(returnComments);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="minLon"></param>
+    /// <param name="maxLon"></param>
+    /// <param name="minLat"></param>
+    /// <param name="maxLat"></param>
+    /// <returns></returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     public async Task<ActionResult<List<CommentReturnV0_2>>> GetComments(
         [BindRequired] double minLon, [BindRequired] double maxLon,
         [BindRequired] double minLat, [BindRequired] double maxLat)
@@ -146,18 +156,7 @@ public class GeoControllerV0_2 : ControllerBase
         var returnComments = new List<CommentReturnV0_2>();
         foreach (var comment in comments)
         {
-            var cmt = new CommentReturnV0_2
-            {
-                Body = new CommentReturnBody
-                {
-                    Author = comment.AuthorName,
-                    Message = comment.Message,
-                    Title = comment.Title
-                },
-                Id = comment.Id,
-                Latitude = comment.Latitude,
-                Longitude = comment.Longitude
-            };
+            var cmt = CommentReturnV0_2.CreateReturn(comment);
 
             returnComments.Add(cmt);
         }
@@ -165,15 +164,19 @@ public class GeoControllerV0_2 : ControllerBase
         return Ok(returnComments);
     }
 
+    /// <summary>
+    /// Deletes the comment
+    /// </summary>
+    /// <param name="id">Id of the comment to be deleted</param>
+    /// <returns>The deleted comment</returns>
     [HttpDelete]
     [Authorize]
-    [Route("{id}")]
+    [Route("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     public async Task<ActionResult<CommentReturnV0_2>> DeleteComment(int id)
     {
-        //TODO: Implement delete so the correct user can delete his/her comment and not someone else. Also can't delete a comment that does not exist ofc.
         var userPrincipal = HttpContext.User;
 
         var userId = userPrincipal.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -183,18 +186,7 @@ public class GeoControllerV0_2 : ControllerBase
             var deletedComment = await _geoCommentService.DeleteCommentById(id, userId);
             if (deletedComment is null) return NotFound();
 
-            var returnComment = new CommentReturnV0_2
-            {
-                Body = new CommentReturnBody
-                {
-                    Author = deletedComment.AuthorName,
-                    Message = deletedComment.Message,
-                    Title = deletedComment.Title
-                },
-                Id = deletedComment.Id,
-                Latitude = deletedComment.Latitude,
-                Longitude = deletedComment.Longitude
-            };
+            var returnComment = CommentReturnV0_2.CreateReturn(deletedComment);
 
             return Ok(returnComment);
         }
@@ -202,7 +194,5 @@ public class GeoControllerV0_2 : ControllerBase
         {
             return Unauthorized();
         }
-
-        throw new NotImplementedException();
     }
 }
