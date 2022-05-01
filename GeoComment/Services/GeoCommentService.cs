@@ -22,6 +22,19 @@ public class GeoCommentService
         return comment;
     }
 
+    public async Task<Comment> DeleteCommentById(int commentId, string commentAuthorId)
+    {
+        var comment = await _geoDbContext.Comments.Include(c => c.Author).FirstOrDefaultAsync(c => c.Id == commentId);
+
+        if (comment is null || comment.Author is null) return null;
+        if (comment.Author.Id != commentAuthorId) throw new UnauthorizedException();
+
+        _geoDbContext.Comments.Remove(comment);
+        await _geoDbContext.SaveChangesAsync();
+
+        return comment;
+    }
+
     public async Task<Comment> CreateCommentInDb(Comment comment)
     {
         var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.UserName == comment.AuthorName);
@@ -31,7 +44,8 @@ public class GeoCommentService
             Latitude = comment.Latitude,
             Longitude = comment.Longitude,
             Message = comment.Message,
-            AuthorName = comment.AuthorName
+            AuthorName = comment.AuthorName,
+            Title = comment.Title
         };
         if (author is not null) newComment.Author = author;
 
@@ -54,4 +68,18 @@ public class GeoCommentService
 
         return comments;
     }
+
+    public async Task<List<Comment>> GetCommentsByUser(string username)
+    {
+        var query = _geoDbContext.Comments.Include(c => c.Author)
+            .Where(c => c.AuthorName == username || c.Author.UserName == username);
+
+        var comments = await query.ToListAsync();
+
+        return comments;
+    }
+}
+
+public class UnauthorizedException : Exception
+{
 }

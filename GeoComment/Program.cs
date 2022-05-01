@@ -1,10 +1,15 @@
 global using GeoComment.Models;
+using System.Text;
 using GeoComment.AutoMapperProfiles;
 using GeoComment.Services;
+using GeoComment.Swagger;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +26,9 @@ builder.Services.AddDbContext<GeoDbContext>(options =>
 builder.Services.AddScoped<Database>();
 builder.Services.AddScoped<GeoCommentService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<JwtManager>();
 
-builder.Services.AddIdentity<GeoUser, IdentityRole>()
+builder.Services.AddIdentityCore<GeoUser>()
     .AddEntityFrameworkStores<GeoDbContext>();
 
 builder.Services.AddAutoMapper(typeof(CommentProfile));
@@ -35,6 +41,16 @@ builder.Services.AddVersionedApiExplorer(options => { options.GroupNameFormat = 
 
 builder.Services.AddSwaggerGen(options =>
 {
+    options.AddSecurityDefinition("JwtAuth", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        In = ParameterLocation.Header,
+        Description = "Basic Authorization header with JWT."
+    });
+
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
     // skapa ett OpenAPI JSON objekt per versionsgrupp
     options.SwaggerDoc("v0.1", new OpenApiInfo()
     {
@@ -46,7 +62,27 @@ builder.Services.AddSwaggerGen(options =>
         Title = "Geo Comment API",
         Version = "ver 0.2"
     });
+
+
+    options.OperationFilter<AddApiVersionExampleValueOperationFilter>();
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var key = Encoding.ASCII.GetBytes(builder.Configuration["JwtConfig:Secret"]);
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey =
+                true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            RequireExpirationTime = false,
+            ValidateLifetime = true,
+        };
+    });
 
 var app = builder.Build();
 
@@ -69,7 +105,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

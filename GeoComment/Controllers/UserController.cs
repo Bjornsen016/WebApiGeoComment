@@ -41,6 +41,12 @@ public class UserController : ControllerBase
     [Route("login")]
     public async Task<ActionResult> Login(RegisterUserInput input)
     {
-        throw new NotImplementedException();
+        string token = await _userService.Login(input);
+
+        if (token is null) return BadRequest();
+
+        var json = new {token = token};
+
+        return Ok(json);
     }
 }

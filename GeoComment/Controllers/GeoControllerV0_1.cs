@@ -68,12 +68,12 @@ public class GeoControllerV0_1 : ControllerBase
             var comment = new Comment
             {
                 AuthorName = input.Author, Latitude = input.Latitude, Longitude = input.Longitude,
-                Message = input.Message
+                Message = input.Message, Title = input.Message.Split(" ")[0]
             };
             var createdComment = await _geoCommentService.CreateCommentInDb(comment);
             var commentReturn = _mapper.Map<CommentReturnDTO>(createdComment);
 
-            return CreatedAtAction(nameof(Get), new {id = commentReturn.Id}, commentReturn);
+            return CreatedAtAction(nameof(CreateComment), new {id = commentReturn.Id}, commentReturn);
         }
         catch (DbUpdateException)
         {
