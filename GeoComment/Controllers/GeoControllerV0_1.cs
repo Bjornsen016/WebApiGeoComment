@@ -24,6 +24,7 @@ public class GeoControllerV0_1 : ControllerBase
         _mapper = mapper;
     }
 
+    [ResponseCache(Duration = 30)]
     [Route("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,7 +74,7 @@ public class GeoControllerV0_1 : ControllerBase
             var createdComment = await _geoCommentService.CreateCommentInDb(comment);
             var commentReturn = _mapper.Map<CommentReturnDTO>(createdComment);
 
-            return CreatedAtAction(nameof(CreateComment), new {id = commentReturn.Id}, commentReturn);
+            return CreatedAtAction(nameof(Get), new {id = commentReturn.Id}, commentReturn);
         }
         catch (DbUpdateException)
         {

@@ -13,6 +13,11 @@ public class GeoCommentService
         _geoDbContext = geoDbContext;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public async Task<Comment> GetCommentById(int id)
     {
         var comment = await _geoDbContext.Comments
@@ -22,6 +27,13 @@ public class GeoCommentService
         return comment;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="commentId"></param>
+    /// <param name="commentAuthorId"></param>
+    /// <returns></returns>
+    /// <exception cref="UnauthorizedException"></exception>
     public async Task<Comment> DeleteCommentById(int commentId, string commentAuthorId)
     {
         var comment = await _geoDbContext.Comments.Include(c => c.Author).FirstOrDefaultAsync(c => c.Id == commentId);
@@ -35,6 +47,11 @@ public class GeoCommentService
         return comment;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="comment"></param>
+    /// <returns></returns>
     public async Task<Comment> CreateCommentInDb(Comment comment)
     {
         var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.UserName == comment.AuthorName);
@@ -55,6 +72,14 @@ public class GeoCommentService
         return cmt.Entity;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="minLon"></param>
+    /// <param name="maxLon"></param>
+    /// <param name="minLat"></param>
+    /// <param name="maxLat"></param>
+    /// <returns></returns>
     public async Task<List<Comment>> GetComments(double minLon, double maxLon, double minLat, double maxLat)
     {
         var query = _geoDbContext.Comments.Include(c => c.Author)
@@ -69,6 +94,11 @@ public class GeoCommentService
         return comments;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="username"></param>
+    /// <returns></returns>
     public async Task<List<Comment>> GetCommentsByUser(string username)
     {
         var query = _geoDbContext.Comments.Include(c => c.Author)

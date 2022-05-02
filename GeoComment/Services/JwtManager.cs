@@ -16,7 +16,7 @@ public class JwtManager
     }
 
     /// <summary>
-    /// Generates a token string for the user
+    /// Generates a token string for the <paramref name="user"/>
     /// </summary>
     /// <param name="user">The GeoUser we want to generate the token for</param>
     /// <returns>The token as a string</returns>

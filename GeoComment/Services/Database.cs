@@ -12,6 +12,9 @@ public class Database
         _geoDbContext = geoDbContext;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public async Task RecreateDb()
     {
         await _geoDbContext.Database.EnsureDeletedAsync();

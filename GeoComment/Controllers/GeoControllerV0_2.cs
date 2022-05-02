@@ -26,11 +26,12 @@ public class GeoControllerV0_2 : ControllerBase
     }
 
     /// <summary>
-    /// Gets a specific comment by id
+    /// Gets a specific comment by <paramref name="id"/>
     /// </summary>
-    /// <param name="id">Id of the comment</param>
+    /// <param name="id" example="1">Id of the comment</param>
     /// <returns>The comment</returns>
     /// <response code="200">Success: Returns the comment</response>
+    [ResponseCache(Duration = 30)]
     [Route("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,19 +51,6 @@ public class GeoControllerV0_2 : ControllerBase
     /// <summary>
     /// Creates a comment
     /// </summary>
-    /// <remarks>
-    /// Sample request:
-    ///
-    ///     POST api/geo-comments
-    ///     {
-    ///         "body": {
-    ///             "title": "Lorem",
-    ///             "message": "Lorem ipsum dolor amet"
-    ///         },
-    ///         "longitude": 5,
-    ///         "latitude": 5
-    ///     }
-    /// </remarks>
     /// <param name="input">Comment input</param>
     /// <returns>The comment if created</returns>
     /// <response code="201">Returns the created comment</response>
@@ -103,7 +91,7 @@ public class GeoControllerV0_2 : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Get all the comments by the user with the provided <paramref name="username"/>
     /// </summary>
     /// <remarks>
     ///     
