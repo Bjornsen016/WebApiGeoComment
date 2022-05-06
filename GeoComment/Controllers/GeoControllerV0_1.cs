@@ -24,10 +24,17 @@ public class GeoControllerV0_1 : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Gets a comment with the <paramref name="id"/>
+    /// </summary>
+    /// <param name="id" example="1"></param>
+    /// <returns></returns>
+    /// <response code="200">Returns the comment</response>
     [ResponseCache(Duration = 30)]
-    [Route("{id}")]
+    [Route("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     [HttpGet]
     public async Task<ActionResult<CommentReturnDTO>> Get(int id)
     {
@@ -40,8 +47,18 @@ public class GeoControllerV0_1 : ControllerBase
         return Ok(commentReturn);
     }
 
+    /// <summary>
+    /// Gets a list of comments according the the parameters
+    /// </summary>
+    /// <param name="minLon" example="0"></param>
+    /// <param name="maxLon" example="10"></param>
+    /// <param name="minLat" example="0"></param>
+    /// <param name="maxLat" example="10"></param>
+    /// <returns></returns>
+    /// <response code="200">Returns a list of comments</response>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
     [HttpGet]
     public async Task<ActionResult<List<CommentReturnDTO>>> GetList(
         [BindRequired] double minLon, [BindRequired] double maxLon,
@@ -59,8 +76,15 @@ public class GeoControllerV0_1 : ControllerBase
         return Ok(returnComments);
     }
 
+    /// <summary>
+    /// Creates a comment with the <paramref name="input"/>
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    /// <response code="201">Returns the created comment</response>
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     [HttpPost]
     public async Task<ActionResult<CommentReturnDTO>> CreateComment(CommentInputDTO input)
     {

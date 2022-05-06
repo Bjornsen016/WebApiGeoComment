@@ -93,12 +93,10 @@ public class GeoControllerV0_2 : ControllerBase
     /// <summary>
     /// Get all the comments by the user with the provided <paramref name="username"/>
     /// </summary>
-    /// <remarks>
-    ///     
-    /// </remarks>
     /// <param name="username">Username of the Author</param>
     /// <returns>The users comments</returns>
-    /// <response code="200">Success: Returns all the comments by the user</response>
+    /// <response code="200">Returns all the comments by the user</response>
+    /// <response code="404">If there are no comments from the user with the <paramref name="username"/></response>
     [HttpGet]
     [Route("{username}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -123,13 +121,14 @@ public class GeoControllerV0_2 : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Gets a list of comments according the the parameters
     /// </summary>
-    /// <param name="minLon"></param>
-    /// <param name="maxLon"></param>
-    /// <param name="minLat"></param>
-    /// <param name="maxLat"></param>
+    /// <param name="minLon" example="0"></param>
+    /// <param name="maxLon" example="10"></param>
+    /// <param name="minLat" example="0"></param>
+    /// <param name="maxLat" example="10"></param>
     /// <returns></returns>
+    /// <response code="200">Returns a list of comments</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -155,8 +154,9 @@ public class GeoControllerV0_2 : ControllerBase
     /// <summary>
     /// Deletes the comment
     /// </summary>
-    /// <param name="id">Id of the comment to be deleted</param>
+    /// <param name="id" example="1">Id of the comment to be deleted</param>
     /// <returns>The deleted comment</returns>
+    /// <response code="200">A copy of the deleted comment</response>
     [HttpDelete]
     [Authorize]
     [Route("{id:int}")]

@@ -21,7 +21,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GeoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
@@ -49,10 +48,8 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.Http,
         Scheme = "Bearer",
         In = ParameterLocation.Header,
-        Description = "Basic Authorization header with JWT."
+        Description = "Bearer Authorization header with JWT."
     });
-
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
     // skapa ett OpenAPI JSON objekt per versionsgrupp
     options.SwaggerDoc("v0.1", new OpenApiInfo()
     {
@@ -65,11 +62,16 @@ builder.Services.AddSwaggerGen(options =>
         Version = "ver 0.2"
     });
 
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+    options.OperationFilter<AddApiVersionExampleValueOperationFilter>();
+
+    #region Enabling XML comments to get included in SwaggerUI
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     options.IncludeXmlComments(xmlPath);
-    options.OperationFilter<AddApiVersionExampleValueOperationFilter>();
+
+    #endregion
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -79,8 +81,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey =
-                true,
+            ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateIssuer = false,
             ValidateAudience = false,

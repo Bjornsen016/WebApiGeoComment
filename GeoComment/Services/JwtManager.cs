@@ -29,7 +29,7 @@ public class JwtManager
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName)
                 // Eventuella roller måste läggas till här
             }),
             // Hur länge token ska vara giltlig

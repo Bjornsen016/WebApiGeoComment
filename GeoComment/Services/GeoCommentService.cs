@@ -36,7 +36,9 @@ public class GeoCommentService
     /// <exception cref="UnauthorizedException"></exception>
     public async Task<Comment> DeleteCommentById(int commentId, string commentAuthorId)
     {
-        var comment = await _geoDbContext.Comments.Include(c => c.Author).FirstOrDefaultAsync(c => c.Id == commentId);
+        var comment = await _geoDbContext.Comments
+            .Include(c => c.Author)
+            .FirstOrDefaultAsync(c => c.Id == commentId);
 
         if (comment is null || comment.Author is null) return null;
         if (comment.Author.Id != commentAuthorId) throw new UnauthorizedException();
@@ -54,19 +56,12 @@ public class GeoCommentService
     /// <returns></returns>
     public async Task<Comment> CreateCommentInDb(Comment comment)
     {
-        var author = await _geoDbContext.Authors.FirstOrDefaultAsync(a => a.UserName == comment.AuthorName);
+        var author = await _geoDbContext.Authors
+            .FirstOrDefaultAsync(a => a.UserName == comment.AuthorName);
 
-        Comment newComment = new Comment
-        {
-            Latitude = comment.Latitude,
-            Longitude = comment.Longitude,
-            Message = comment.Message,
-            AuthorName = comment.AuthorName,
-            Title = comment.Title
-        };
-        if (author is not null) newComment.Author = author;
+        if (author is not null) comment.Author = author;
 
-        var cmt = await _geoDbContext.AddAsync(newComment);
+        var cmt = await _geoDbContext.AddAsync(comment);
         await _geoDbContext.SaveChangesAsync();
 
         return cmt.Entity;
@@ -82,7 +77,8 @@ public class GeoCommentService
     /// <returns></returns>
     public async Task<List<Comment>> GetComments(double minLon, double maxLon, double minLat, double maxLat)
     {
-        var query = _geoDbContext.Comments.Include(c => c.Author)
+        var query = _geoDbContext.Comments
+            .Include(c => c.Author)
             .Where(c =>
                 c.Latitude >= minLat &&
                 c.Latitude <= maxLat &&
@@ -101,7 +97,8 @@ public class GeoCommentService
     /// <returns></returns>
     public async Task<List<Comment>> GetCommentsByUser(string username)
     {
-        var query = _geoDbContext.Comments.Include(c => c.Author)
+        var query = _geoDbContext.Comments
+            .Include(c => c.Author)
             .Where(c => c.AuthorName == username || c.Author.UserName == username);
 
         var comments = await query.ToListAsync();
