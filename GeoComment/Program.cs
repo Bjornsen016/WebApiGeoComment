@@ -16,28 +16,32 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<GeoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+#region Own services
 
 builder.Services.AddScoped<Database>();
 builder.Services.AddScoped<GeoCommentService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JwtManager>();
+builder.Services.AddAutoMapper(typeof(CommentProfile));
+
+#endregion
 
 builder.Services.AddIdentityCore<GeoUser>()
     .AddEntityFrameworkStores<GeoDbContext>();
 
-builder.Services.AddAutoMapper(typeof(CommentProfile));
 
 builder.Services.AddApiVersioning(options =>
 {
     options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
 });
+
+#region Swagger
+
 builder.Services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "'v'VVV"; });
 
 builder.Services.AddSwaggerGen(options =>
@@ -74,6 +78,9 @@ builder.Services.AddSwaggerGen(options =>
     #endregion
 });
 
+#endregion
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -92,7 +99,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     var scope = app.Services.CreateScope();
@@ -103,7 +109,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        // skapar en UI flik per OpenAPI JSON objekt
         options.SwaggerEndpoint("/swagger/v0.1/swagger.json", "v0.1");
         options.SwaggerEndpoint("/swagger/v0.2/swagger.json", "v0.2");
     });

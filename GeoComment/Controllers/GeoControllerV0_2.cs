@@ -29,8 +29,8 @@ public class GeoControllerV0_2 : ControllerBase
     /// Gets a specific comment by <paramref name="id"/>
     /// </summary>
     /// <param name="id" example="1">Id of the comment</param>
-    /// <returns>The comment</returns>
-    /// <response code="200">Success: Returns the comment</response>
+    /// <returns>The comment with a status code of 200</returns>
+    /// <response code="200">Returns the comment</response>
     [ResponseCache(Duration = 30)]
     [Route("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -52,7 +52,7 @@ public class GeoControllerV0_2 : ControllerBase
     /// Creates a comment
     /// </summary>
     /// <param name="input">Comment input</param>
-    /// <returns>The comment if created</returns>
+    /// <returns>The comment if created with a status code of 201</returns>
     /// <response code="201">Returns the created comment</response>
     [HttpPost]
     [Authorize]
@@ -94,7 +94,7 @@ public class GeoControllerV0_2 : ControllerBase
     /// Get all the comments by the user with the provided <paramref name="username"/>
     /// </summary>
     /// <param name="username">Username of the Author</param>
-    /// <returns>The users comments</returns>
+    /// <returns>The users comments with a status code of 200</returns>
     /// <response code="200">Returns all the comments by the user</response>
     /// <response code="404">If there are no comments from the user with the <paramref name="username"/></response>
     [HttpGet]
@@ -121,13 +121,13 @@ public class GeoControllerV0_2 : ControllerBase
     }
 
     /// <summary>
-    /// Gets a list of comments according the the parameters
+    /// Gets a list of comments according the the coordinates provided
     /// </summary>
     /// <param name="minLon" example="0"></param>
     /// <param name="maxLon" example="10"></param>
     /// <param name="minLat" example="0"></param>
     /// <param name="maxLat" example="10"></param>
-    /// <returns></returns>
+    /// <returns>A list of comments with a status code of 200</returns>
     /// <response code="200">Returns a list of comments</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -155,7 +155,7 @@ public class GeoControllerV0_2 : ControllerBase
     /// Deletes the comment
     /// </summary>
     /// <param name="id" example="1">Id of the comment to be deleted</param>
-    /// <returns>The deleted comment</returns>
+    /// <returns>The deleted comment with a status code of 200</returns>
     /// <response code="200">A copy of the deleted comment</response>
     [HttpDelete]
     [Authorize]

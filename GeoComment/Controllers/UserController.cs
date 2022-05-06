@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Registers a new user
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
@@ -41,10 +41,11 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Logs in the user
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
+    /// <response code="200">Returns a JWT token</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

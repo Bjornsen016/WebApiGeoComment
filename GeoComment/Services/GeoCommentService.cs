@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using GeoComment.DTOs;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace GeoComment.Services;
 
@@ -14,10 +12,10 @@ public class GeoCommentService
     }
 
     /// <summary>
-    /// 
+    /// Gets the comment with <paramref name="id"/>
     /// </summary>
     /// <param name="id"></param>
-    /// <returns></returns>
+    /// <returns>The comment if found</returns>
     public async Task<Comment> GetCommentById(int id)
     {
         var comment = await _geoDbContext.Comments
@@ -28,11 +26,11 @@ public class GeoCommentService
     }
 
     /// <summary>
-    /// 
+    /// Removes the comment from the database if it exists and the correct user owns it.
     /// </summary>
     /// <param name="commentId"></param>
-    /// <param name="commentAuthorId"></param>
-    /// <returns></returns>
+    /// <param name="commentAuthorId">Id of the user that posted the comment</param>
+    /// <returns>The deleted comment</returns>
     /// <exception cref="UnauthorizedException"></exception>
     public async Task<Comment> DeleteCommentById(int commentId, string commentAuthorId)
     {
@@ -50,10 +48,10 @@ public class GeoCommentService
     }
 
     /// <summary>
-    /// 
+    /// Creates the provided <paramref name="comment"/> in the database
     /// </summary>
-    /// <param name="comment"></param>
-    /// <returns></returns>
+    /// <param name="comment">The comment to create</param>
+    /// <returns>The created comment if successful</returns>
     public async Task<Comment> CreateCommentInDb(Comment comment)
     {
         var author = await _geoDbContext.Authors
@@ -68,13 +66,13 @@ public class GeoCommentService
     }
 
     /// <summary>
-    /// 
+    /// Gets comments according to the provided coordinates
     /// </summary>
     /// <param name="minLon"></param>
     /// <param name="maxLon"></param>
     /// <param name="minLat"></param>
     /// <param name="maxLat"></param>
-    /// <returns></returns>
+    /// <returns>A List with the comments</returns>
     public async Task<List<Comment>> GetComments(double minLon, double maxLon, double minLat, double maxLat)
     {
         var query = _geoDbContext.Comments
@@ -91,10 +89,10 @@ public class GeoCommentService
     }
 
     /// <summary>
-    /// 
+    /// Gets all the comment by the user with the <paramref name="username"/>
     /// </summary>
     /// <param name="username"></param>
-    /// <returns></returns>
+    /// <returns>A List with the comments</returns>
     public async Task<List<Comment>> GetCommentsByUser(string username)
     {
         var query = _geoDbContext.Comments

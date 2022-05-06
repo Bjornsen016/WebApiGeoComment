@@ -17,6 +17,11 @@ namespace GeoComment.Controllers
             _database = database;
         }
 
+        /// <summary>
+        /// Resets the database
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">Success when the database has been reset</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Route("/test/reset-db")]
